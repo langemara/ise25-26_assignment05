@@ -92,6 +92,12 @@ public class CucumberPosSteps {
     }
 
     // TODO: Add Given step for new scenario
+    @Given("the following POS list")
+    public void aPosList(List<PosDto> posList) { 
+        createdPosList = createPos(posList);
+        assertThat(createdPosList).isNotEmpty();
+    }
+
 
     // When -----------------------------------------------------------------------
 
@@ -102,7 +108,35 @@ public class CucumberPosSteps {
     }
 
     // TODO: Add When step for new scenario
+    @When("I update the POS \"Schmelzpunkt\" with")
+    public void updatePosWithTheFollowingValues(List<PosDto> updatedPosList) {
+        PosDto updatedData = updatedPosList.stream()
+            .filter(p -> p.name().equals("Schmelzpunkt"))
+            .findFirst()
+            .orElseThrow();
 
+        PosDto original = createdPosList.stream()
+            .filter(p -> p.name().equals("Schmelzpunkt"))
+            .findFirst()
+            .orElseThrow();
+
+        PosDto merged = new PosDto(
+            original.id(),
+            original.createdAt(),
+            null,                   // füge neue zeit ein
+            updatedData.name(),
+            updatedData.description(),
+            updatedData.type(),
+            updatedData.campus(),
+            updatedData.street(),
+            updatedData.houseNumber(),
+            updatedData.postalCode(),
+            updatedData.city()
+        );
+
+        updatedPos = updatePos(List.of(merged)).get(0);
+    }
+   
     // Then -----------------------------------------------------------------------
 
     @Then("the POS list should contain the same elements in the same order")
@@ -114,4 +148,12 @@ public class CucumberPosSteps {
     }
 
     // TODO: Add Then step for new scenario
+    @Then("the POS list should contain the same elements as the following list")
+    public void thePosListShouldContainTheSameElements(List<PosDto> updatedPosList) {
+      List<PosDto> retrievedPosList = retrievePos();
+      assertThat(retrievedPosList)
+                .usingRecursiveFieldByFieldElementComparatorIgnoringFields("id", "createdAt", "updatedAt")
+                .containsExactlyInAnyOrderElementsOf(updatedPosList);
+
+    }
 }
