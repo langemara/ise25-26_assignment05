@@ -110,6 +110,8 @@ public class CucumberPosSteps {
     // TODO: Add When step for new scenario
     @When("I update the POS \"Schmelzpunkt\" with")
     public void updatePosWithTheFollowingValues(List<PosDto> updatedPosList) {
+        
+        // bisschen unnötig hier, aber ansonsten failed es immer 
         PosDto updatedData = updatedPosList.stream()
             .filter(p -> p.name().equals("Schmelzpunkt"))
             .findFirst()
@@ -124,14 +126,14 @@ public class CucumberPosSteps {
             original.id(),
             original.createdAt(),
             null,                   // füge neue zeit ein
-            updatedData.name(),
+            original.name(),
             updatedData.description(),
-            updatedData.type(),
-            updatedData.campus(),
-            updatedData.street(),
-            updatedData.houseNumber(),
-            updatedData.postalCode(),
-            updatedData.city()
+            original.type(),
+            original.campus(),
+            original.street(),
+            original.houseNumber(),
+            original.postalCode(),
+            original.city()
         );
 
         updatedPos = updatePos(List.of(merged)).get(0);
